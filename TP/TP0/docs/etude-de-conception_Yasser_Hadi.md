@@ -1,6 +1,6 @@
-# Étude de conception — [nom du projet]
 
-Groupe : [Yasser Hadli] · Version : [finale] · Date : [28/10/2026]
+
+Groupe : [Yasser Hadli - Adam biloul] · Version : [finale] · Date : [28/10/2026]
 
 ## 1. Contexte et utilisateurs
 
