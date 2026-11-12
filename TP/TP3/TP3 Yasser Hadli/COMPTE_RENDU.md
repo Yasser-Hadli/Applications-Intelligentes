@@ -127,12 +127,24 @@ Le port 8501 n'a pas besoin de figurer dans `MAINTAI_CORS_ORIGINS` pour cette re
 
 ## 6. Le rendu Git
 
-- **Lien de la pull request :** non disponible à ce stade.
-- **Tag `tp3` sur GitHub :** non vérifié.
-- **État Git avant le commit :** non disponible. Le dossier actuel n'est pas reconnu comme un dépôt Git (`fatal: not a git repository`).
+- **Dépôt et branche :** j'ai ajouté mon travail au dépôt [Applications-Intelligentes](https://github.com/Yasser-Hadli/Applications-Intelligentes), sur la branche `TP`, en conservant les dossiers des anciens TP.
+- **Lien de la pull request :** je n'ai pas encore créé de pull request pour cette branche. La consultation des pull requests ouvertes et fermées issues de `TP` n'en a renvoyé aucune. Mon travail est toutefois publié dans le [dossier TP3 sur GitHub](https://github.com/Yasser-Hadli/Applications-Intelligentes/tree/TP/TP/TP3/TP3%20Yasser%20Hadli).
+- **Tag `tp3` sur GitHub :** non. La commande `git ls-remote --tags origin refs/tags/tp3` n'a renvoyé aucune référence : ce tag n'existe pas sur le dépôt distant au moment de la vérification.
+- **État Git avant le commit :** avant l'ajout des fichiers Python, `git status --short` affichait uniquement `?? TP/TP3/`. Après `git add`, seuls `app.py` et `client.py` étaient indexés. J'ai ensuite ajouté `COMPTE_RENDU.md` au même commit avec `git commit --amend --no-edit`. Aucun fichier des anciens TP n'a été inclus.
 
-J'ai vérifié le fichier `.gitignore` : il contient `.env`, `data/*.csv` et `models/`. Ces règles excluent normalement ces fichiers s'ils ne sont pas déjà suivis par Git. Je ne peux pas confirmer leur absence d'un ancien `git status` sans disposer du dépôt et de cette sortie.
+Le commit publié est [`d44cb66` — Ajout du TP3 - Yasser Hadli](https://github.com/Yasser-Hadli/Applications-Intelligentes/commit/d44cb66760e23d53fe573dce8af60f2392b58336). Il contient uniquement les trois fichiers suivants :
+
+```text
+TP/TP3/TP3 Yasser Hadli/
+├── app.py
+├── client.py
+└── COMPTE_RENDU.md
+```
+
+Les fichiers `.env`, les données et les modèles ne figuraient pas dans les changements préparés pour ce commit et n'ont pas été publiés avec mon TP3. Après le commit et le push, `git status --short` ne renvoyait aucune ligne : le répertoire de travail était propre. J'ai aussi vérifié que la référence distante `refs/heads/TP` pointait vers le même commit `d44cb66`.
+
+L'erreur initiale `fatal: not a git repository` concernait le dossier de développement avant le clonage. Le rendu est maintenant organisé dans un véritable clone Git du dépôt GitHub. Il me reste à créer la pull request et le tag `tp3` si ces deux éléments sont exigés pour la remise.
 
 ## 7. Ce qui reste flou
 
-Je comprends mieux la différence entre le navigateur, le serveur Streamlit et l'API. Je souhaite encore approfondir la gestion du cache quand le fichier CSV change, ainsi que la mise en production de l'application. Je dois également finaliser le rendu Git et vérifier la création de la pull request et du tag `tp3`.
+Je comprends mieux la différence entre le navigateur, le serveur Streamlit et l'API. Je souhaite encore approfondir la gestion du cache quand le fichier CSV change, ainsi que la mise en production de l'application. Mon code et mon compte rendu sont publiés sur la branche `TP` ; la pull request et le tag `tp3` restent à créer pour compléter ces éléments du rendu Git.
