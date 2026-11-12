@@ -1,6 +1,6 @@
 # Compte rendu · TP3 : une interface Streamlit pour MaintAI
 
-**Groupe :** Yasser Hadli - Adam Biloul - Mohammed Be · **Membre :** Yasser Hadli · **Date :** 12/11/2026
+**Groupe :** Groupe 1 · **Membre :** Yasser Hadli · **Date :** 12/11/2026
 
 ## 1. Mise en place
 
@@ -127,10 +127,9 @@ Le port 8501 n'a pas besoin de figurer dans `MAINTAI_CORS_ORIGINS` pour cette re
 
 ## 6. Le rendu Git
 
-- **Dépôt et branche :** j'ai ajouté mon travail au dépôt [Applications-Intelligentes](https://github.com/Yasser-Hadli/Applications-Intelligentes), sur la branche `TP`, en conservant les dossiers des anciens TP.
-- **Lien de la pull request :** je n'ai pas encore créé de pull request pour cette branche. La consultation des pull requests ouvertes et fermées issues de `TP` n'en a renvoyé aucune. Mon travail est toutefois publié dans le [dossier TP3 sur GitHub](https://github.com/Yasser-Hadli/Applications-Intelligentes/tree/TP/TP/TP3/TP3%20Yasser%20Hadli).
-- **Tag `tp3` sur GitHub :** non. La commande `git ls-remote --tags origin refs/tags/tp3` n'a renvoyé aucune référence : ce tag n'existe pas sur le dépôt distant au moment de la vérification.
-- **État Git avant le commit :** avant l'ajout des fichiers Python, `git status --short` affichait uniquement `?? TP/TP3/`. Après `git add`, seuls `app.py` et `client.py` étaient indexés. J'ai ensuite ajouté `COMPTE_RENDU.md` au même commit avec `git commit --amend --no-edit`. Aucun fichier des anciens TP n'a été inclus.
+Dépôt GitHub : https://github.com/Yasser-Hadli/Applications-Intelligentes
+
+Branche de travail : TP
 
 Le commit publié est [`d44cb66` — Ajout du TP3 - Yasser Hadli](https://github.com/Yasser-Hadli/Applications-Intelligentes/commit/d44cb66760e23d53fe573dce8af60f2392b58336). Il contient uniquement les trois fichiers suivants :
 
