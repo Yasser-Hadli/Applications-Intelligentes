@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maintai"
+dynamic = ["version"]
+description = "Prediction de panne a partir de releves de capteurs."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.4",
+    "pandas>=3.0",
+    "scikit-learn>=1.8",
+    "joblib>=1.5",
+    "httpx>=0.28",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2",
+]
+ui = ["streamlit>=1.40"]
+dev = ["pytest>=8", "ruff"]
+
+[project.scripts]
+maintai-predict = "maintai.cli:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "maintai.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["maintai*"]
