@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/*.csv
+models/
+.env
+# Le .gitignore du dépôt exclut .env.* : le modèle sans secret doit rester versionné
+!.env.example
