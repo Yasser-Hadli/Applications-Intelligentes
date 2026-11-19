@@ -9,7 +9,7 @@ Ce TP correspond à la séance 3. Il poursuit deux objectifs :
 1. comprendre ce qui rend un projet reproductible, à partir du notebook de Karim ;
 2. compléter une chaîne de Machine Learning pour prédire des pannes (cas MaintAI), comparer plusieurs modèles à une baseline et justifier le choix final.
 
-Ce document est mon compte rendu individuel. Le projet commun se trouve dans `TP/TP0/` du dépôt du groupe. L'étude de conception et le choix du modèle sont rédigés par le coordinateur dans `etude-de-conception_Yasser_Hadi.md` et `choix-modele_Yasser_Hadi.md`.
+Ce document est un compte rendu individuel. Le projet commun se trouve dans `TP/TP0/` du dépôt du groupe. L'étude de conception et le choix du modèle sont rédigés par le coordinateur dans `etude-de-conception_Yasser_Hadi.md` et `choix-modele_Yasser_Hadi.md`.
 
 ## 2. Pourquoi le projet de Karim n'est pas reproductible
 
@@ -76,15 +76,15 @@ Le projet commun compare quatre candidats :
 | Random Forest | 0,873 | 0,545 | 0,671 | 0,602 | 96 | 80 | 47 |
 | **Gradient Boosting** | 0,888 | **0,608** | 0,713 | 0,656 | 107 | 69 | 43 |
 
-Ce que je retiens de ce tableau :
+À retenir de ce tableau :
 
 - **L'accuracy trompe ici.** La baseline atteint 82,4 % sans détecter une seule panne, simplement parce que la plupart des relevés sont sans panne.
 - **Le rappel décide.** Gradient Boosting détecte le plus de pannes : 107 sur 176, soit 60,8 %.
 - **Le compromis est favorable.** Par rapport à la régression logistique, il détecte 6 pannes de plus pour 13 inspections de plus. Une panne manquée coûte une journée d'arrêt et une fausse alerte une heure d'inspection.
 
-## 7. Mon essai complémentaire
+## 7. Essai complémentaire
 
-Dans ma version locale du projet, j'ai gardé les mêmes données, le même découpage et les mêmes métriques, mais j'ai testé deux variantes :
+La version locale du projet garde les mêmes données, le même découpage et les mêmes métriques, avec deux variantes testées :
 
 | Modèle testé localement | Accuracy | Rappel | Précision | F1 | Pannes détectées | Fausses alertes |
 |---|---:|---:|---:|---:|---:|---:|
@@ -95,7 +95,7 @@ Passer de 100 à 200 arbres améliore un peu la forêt : 2 pannes détectées en
 
 ## 8. Le modèle est-il suffisant ?
 
-Le dépôt commun ne fixe pas de seuil chiffré d'acceptation. Pour juger le résultat, je reprends l'exemple du polycopié pour MaintAI : rappel ≥ 0,75 et précision ≥ 0,50 sur le jeu de test.
+Le dépôt commun ne fixe pas de seuil chiffré d'acceptation. Pour juger le résultat, ce compte rendu reprend l'exemple du polycopié pour MaintAI : rappel ≥ 0,75 et précision ≥ 0,50 sur le jeu de test.
 
 | Critère sur le jeu de test | Résultat de Gradient Boosting | Atteint ? |
 |---|---|---|
@@ -107,9 +107,9 @@ Pour atteindre 0,75, il faudrait détecter au moins 132 pannes sur 176, soit 25 
 
 ## 9. Vérification
 
-Ma version locale passe les tests : **8 passed**, le 18/11/2026, sur une copie du projet avec Python 3.12.6 et les versions de `requirements.txt`. L'entraînement relancé dans cette copie a redonné le même `metrics.json`.
+La version locale passe les tests : **8 passed**, le 18/11/2026, sur une copie du projet avec Python 3.12.6 et les versions de `requirements.txt`. L'entraînement relancé dans cette copie a redonné le même `metrics.json`.
 
-J'ai aussi reproduit avec mon code la Random Forest à 100 arbres du projet commun : j'obtiens les mêmes scores que ceux publiés par le coordinateur. Je n'ai pas exécuté moi-même le code du dépôt commun ; son résultat de tests (8 passed) est celui indiqué dans le compte rendu du coordinateur.
+La Random Forest à 100 arbres du projet commun a aussi été reproduite avec le code local : elle donne les mêmes scores que ceux publiés par le coordinateur. Le code du dépôt commun n'a pas été exécuté ici ; son résultat de tests (8 passed) est celui indiqué dans le compte rendu du coordinateur.
 
 Ces tests vérifient que le code se comporte comme prévu. Ils ne prouvent pas que le modèle est assez bon pour une usine.
 
@@ -124,4 +124,4 @@ Pour la suite, il faudrait créer un jeu de validation, y régler le seuil de d�
 
 ## 11. Conclusion
 
-Ce TP m'a montré qu'un résultat n'a de valeur que si quelqu'un d'autre peut le reproduire : environnement, versions, chemins, graine et tests comptent autant que le modèle. Il montre aussi que la métrique doit venir du coût des erreurs. Gradient Boosting est le meilleur candidat avec un rappel de 60,8 %, mais il reste sous l'objectif de 75 % : il faut encore l'améliorer avant de s'en servir pour décider des inspections.
+Ce TP montre qu'un résultat n'a de valeur que si quelqu'un d'autre peut le reproduire : environnement, versions, chemins, graine et tests comptent autant que le modèle. Il montre aussi que la métrique doit venir du coût des erreurs. Gradient Boosting est le meilleur candidat avec un rappel de 60,8 %, mais il reste sous l'objectif de 75 % : il faut encore l'améliorer avant de s'en servir pour décider des inspections.

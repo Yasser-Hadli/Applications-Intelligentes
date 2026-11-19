@@ -18,7 +18,7 @@ Requêtes envoyées avec `curl.exe` à l'API locale du TP1, sur le port 8766, ca
 
 Une de vos prévisions était-elle fausse ? Laquelle, et pourquoi ?
 
-Non, les cinq codes obtenus sont ceux que j'avais prévus. Un essai complémentaire montre toutefois une limite : `temperature_c` envoyé sous la forme `"60"` est accepté avec un code 200, car Pydantic sait convertir ce texte en nombre. Seul un texte non convertible, comme `"chaud"`, est refusé.
+Non, les cinq codes obtenus correspondent aux codes prévus. Un essai complémentaire montre toutefois une limite : `temperature_c` envoyé sous la forme `"60"` est accepté avec un code 200, car Pydantic sait convertir ce texte en nombre. Seul un texte non convertible, comme `"chaud"`, est refusé.
 
 Dernière ligne de `python -m pytest` avec `tests/test_casser.py` (dans `TP/TP1`) :
 
@@ -28,7 +28,7 @@ Dernière ligne de `python -m pytest` avec `tests/test_casser.py` (dans `TP/TP1`
 
 À quoi sert `@pytest.mark.parametrize` ? Combien de tests pytest compte-t-il pour votre fonction, et pourquoi ?
 
-Ce décorateur lance la même fonction de test avec plusieurs jeux de données, sans recopier le code. pytest compte 5 tests pour ma fonction, car la liste `CAS_REFUSES` contient 5 lignes. Chaque cas apparaît séparément dans le rapport, donc on voit lequel échoue.
+Ce décorateur lance la même fonction de test avec plusieurs jeux de données, sans recopier le code. pytest compte 5 tests pour cette fonction, car la liste `CAS_REFUSES` contient 5 lignes. Chaque cas apparaît séparément dans le rapport, donc on voit lequel échoue.
 
 ## 2. ruff
 
@@ -66,7 +66,7 @@ Quelle différence entre `ruff check .` et `python -m pytest` ? Que vérifie cha
 
 `ruff check .` lit le code sans l'exécuter et signale ce qui est mal écrit ou peut être simplifié : imports, variables inutiles, écritures dépassées. `python -m pytest` exécute le code et vérifie qu'il donne les résultats attendus. Les deux sont complémentaires : ici, les 18 tests passent alors que ruff signale une écriture à moderniser.
 
-Dans le TP2, j'ai lancé `ruff check . --fix` seulement après le sprint 1. Il a regroupé les imports de `fastapi` et remplacé `timezone.utc` par `UTC`. `ruff check .` y donne ensuite `All checks passed!`.
+Dans le TP2, `ruff check . --fix` a été lancé seulement après le sprint 1. Il a regroupé les imports de `fastapi` et remplacé `timezone.utc` par `UTC`. `ruff check .` y donne ensuite `All checks passed!`.
 
 ## 3. Mise en place du TP2 (dans `TP/TP2`)
 
@@ -134,7 +134,7 @@ La clé est contrôlée avant les données du relevé, et le premier contrôle q
 
 Relancez uvicorn **sans** `--env-file .env` et envoyez un relevé avec votre clé. Quel code obtenez-vous, et pourquoi ce n'est pas 401 ?
 
-J'obtiens 500, avec `{"detail":"La clé API du serveur n'est pas configurée"}` (essai sur le port 8767). Le serveur n'a aucune clé à laquelle comparer celle du client : le problème vient de sa configuration. Un 401 accuserait à tort le client d'avoir envoyé une mauvaise clé.
+Le code obtenu est 500, avec `{"detail":"La clé API du serveur n'est pas configurée"}` (essai sur le port 8767). Le serveur n'a aucune clé à laquelle comparer celle du client : le problème vient de sa configuration. Un 401 accuserait à tort le client d'avoir envoyé une mauvaise clé.
 
 ## 5. La page web (sprint 2)
 
@@ -225,4 +225,6 @@ Dernière ligne de `python -m pytest` avec `headers=HEADERS` :
 
 ## 9. Ce qui reste flou
 
-À compléter personnellement.
+Le point bloquant est le port de l'API. Sur ce poste, un conteneur Docker d'un autre projet publie déjà le port 8000. La page appelait `http://localhost:8000` par défaut : elle contactait donc ce service et non l'API du TP2. Comme il répond 404 à la requête `OPTIONS`, le navigateur bloquait l'appel et la page affichait `API injoignable ou bloquée par CORS : Failed to fetch`. La liste `MAINTAI_CORS_ORIGINS` était correcte : il ne fallait pas la modifier.
+
+Un port ouvert par Docker peut donc rester actif sans qu'on y pense et avoir la priorité sur l'application. Sur ce poste, un serveur de test démarre sans erreur sur `127.0.0.1:8000`, mais `localhost` désigne d'abord `::1` (IPv6), une adresse où Docker écoute : c'est donc Docker qui répond à `http://localhost:8000`. Solution retenue : lancer l'API sur le port 8765 et utiliser `http://localhost:8765` dans la page.

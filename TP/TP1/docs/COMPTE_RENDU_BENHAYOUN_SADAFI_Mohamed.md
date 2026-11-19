@@ -61,7 +61,7 @@ Pourquoi répondre **503** et pas 500 quand le modèle manque ?
 
 Un code 500 signale une erreur imprévue dans le code. Ici, la situation est connue : le service tourne, mais il ne peut pas encore répondre car le modèle n'est pas disponible. Le code 503 le dit clairement au client, et le message indique comment corriger le problème.
 
-> Note : le code cité ici est celui de ma version locale. Le code commun de `TP/TP1` renvoie le message plus court « Modèle de prédiction indisponible ». La remarque sur le message qui indique la correction vaut donc pour ma version locale.
+> Note : le code cité ici est celui de la version locale. Le code commun de `TP/TP1` renvoie le message plus court « Modèle de prédiction indisponible ». La remarque sur le message qui indique la correction vaut donc pour la version locale.
 
 Pourquoi le modèle est-il chargé **une seule fois**, au démarrage, et pas à chaque requête ?
 
@@ -113,8 +113,8 @@ Dans le schéma `SensorReading`, visible dans l'onglet **Schema** du corps de `P
 
 ## 8. Ce qui reste flou
 
-**Les tests qui passent ou échouent.** Je ne comprenais pas d'abord pourquoi le projet affichait « 3 failed » alors que le TP avançait. J'ai compris que ces échecs étaient attendus aux premières étapes, et que leur cause changeait entre elles. Ce qui reste moins naturel pour moi, c'est qu'un test puisse passer pour une mauvaise raison : je dois encore apprendre à vérifier ce qu'un test vert prouve réellement.
+**Les tests qui passent ou échouent.** Au départ, il n'était pas évident de comprendre pourquoi le projet affichait « 3 failed » alors que le TP avançait. Ces échecs étaient attendus aux premières étapes, et leur cause changeait entre elles. Le point encore difficile est qu'un test puisse passer pour une mauvaise raison : il reste à apprendre à vérifier ce qu'un test vert prouve réellement.
 
-**`localhost` et les ports.** En lançant l'API, j'ai découvert qu'une autre application utilisait déjà le port 8000. Je sais maintenant qu'il faut vérifier quelle application répond et qu'on peut choisir un autre port, mais je ne maîtrise pas encore bien pourquoi `localhost` et `127.0.0.1` ont pu mener à deux applications différentes.
+**`localhost` et les ports.** Au lancement de l'API, une autre application utilisait déjà le port 8000. Il faut donc vérifier quelle application répond, et il est possible de choisir un autre port. Reste à mieux comprendre pourquoi `localhost` et `127.0.0.1` ont pu mener à deux applications différentes.
 
-**Le rôle de l'ADR.** Je ne savais pas ce qu'était un ADR ni en quoi il différait du compte rendu. Je comprends maintenant qu'il sert à justifier une décision, mais je ne sais pas encore bien quelles décisions méritent d'en avoir un dans un projet.
+**Le rôle de l'ADR.** La notion d'ADR et sa différence avec le compte rendu n'étaient pas claires au départ. Un ADR sert à justifier une décision. Reste à mieux savoir quelles décisions méritent d'en avoir un dans un projet.
