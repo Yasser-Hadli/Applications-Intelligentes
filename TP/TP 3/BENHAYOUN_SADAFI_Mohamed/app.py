@@ -28,12 +28,6 @@ onglet_donnees, onglet_prediction = st.tabs(["Données", "Prédiction"])
 # Sprint 1 : explorer les données
 with onglet_donnees:
     df = charger(get_settings().data_path)
-    # TODO TP3 sprint 1 :
-    #   1. trois indicateurs côte à côte (st.columns, puis .metric) :
-    #      le nombre de relevés, le taux de panne (df.failure.mean()), la température moyenne
-    #   2. une liste déroulante (st.selectbox) pour choisir une variable parmi FEATURES
-    #   3. le taux de panne par tranche de cette variable (pd.cut, groupby), en barres (st.bar_chart)
-    #   4. un nuage de points température / vibration, coloré par panne (st.scatter_chart)
     c1, c2, c3 = st.columns(3)
     c1.metric("Relevés", len(df))
     c2.metric("Taux de panne", f"{df.failure.mean():.1%}")
@@ -41,11 +35,12 @@ with onglet_donnees:
 
     var = st.selectbox("Variable", FEATURES)
     taux = df.groupby(pd.cut(df[var], bins=10))["failure"].mean()
-    taux.index = taux.index.astype(str)
+    taux.index = taux.index.astype(str)  # tranches en texte, sinon st.bar_chart plante
     st.bar_chart(taux, x_label=var, y_label="Taux de panne", sort=False)
 
     points = df.assign(panne=df.failure.map({0: "non", 1:"oui"}))
     st.scatter_chart(points, x="temperature_c", y="vibration_mm_s", color="panne")
+
 
 # Sprint 2 : demander une prédiction à l'API
 with onglet_prediction:
@@ -59,10 +54,6 @@ with onglet_prediction:
         envoye = st.form_submit_button("Prédire")
 
     if envoye:
-        # TODO TP3 sprint 2 :
-        #   1. créer MaintaiClient(url, api_key=cle) et appeler .predict(releve)
-        #   2. APIError → st.warning avec le code et le message ; httpx.HTTPError → st.error("API injoignable ...")
-        #   3. sinon : st.metric("Probabilité de panne", f"{pct} %"), puis st.error (alerte) ou st.success (normal)
         try:
             resultat = MaintaiClient(url, api_key=cle).predict(releve)
         except APIError as e:
