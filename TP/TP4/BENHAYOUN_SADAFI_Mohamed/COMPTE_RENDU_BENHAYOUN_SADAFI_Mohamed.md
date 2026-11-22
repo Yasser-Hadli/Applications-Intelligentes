@@ -134,10 +134,11 @@ Après `pip install scikit-learn==1.8.0`, la version correspond à celle de l'en
 
 ## 5. Le rendu Git
 
-- Lien de la pull request : …
-- Le tag `tp4` existe sur GitHub : oui / non
-- `git status` avant le commit : `dist/`, `build/` ou `maintai.egg-info/` apparaissaient-ils ? oui / non
+- Lien de la pull request : pas de pull request, le rendu a été poussé directement sur la branche `TP` du dépôt https://github.com/Yasser-Hadli/Applications-Intelligentes (commit https://github.com/Yasser-Hadli/Applications-Intelligentes/commit/ff881b28ed1c430a91e37f61a34889cca09dad49)
+- Le tag `tp4` existe sur GitHub : oui
+- `git status` avant le commit : `dist/`, `build/` ou `maintai.egg-info/` apparaissaient-ils ? non : ils sont listés dans le `.gitignore` du projet (`dist/`, `build/`, `*.egg-info/`), comme `.venv/` et `models/`. Seuls `pyproject.toml` et le compte rendu ont été ajoutés.
 
 ## 6. Ce qui reste flou
 
-…
+- Comment distribuer proprement le modèle avec le package : le wheel ne contient que le code, et il faut indiquer `MAINTAI_MODELS_DIR` à la main. Je ne sais pas encore quelle est la bonne pratique en production (dossier partagé, téléchargement au premier lancement, image Docker…).
+- Le choix des versions minimales dans `dependencies` : avec `scikit-learn>=1.5`, pip installe la dernière version (1.9.1) et le modèle entraîné en 1.8.0 affiche un avertissement. Faut-il plutôt borner la version (`scikit-learn>=1.8,<1.9`) pour rester cohérent avec le modèle, au risque de gêner d'autres packages ?
