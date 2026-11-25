@@ -4,43 +4,50 @@ Date : 25/11/2026 · Auteurs : Mohamed BENHAYOUN SADAFI
 
 ## Contexte
 
-MaintAI doit lever une alerte avant qu'une machine tombe en panne. Une panne manquée (faux négatif) coûte plus cher qu'une fausse alerte (faux positif) : la première arrête la production et impose une réparation, la seconde coûte une inspection inutile. Jusqu'au TP4, le modèle et le seuil étaient choisis sans trace ; depuis le TP5, chaque entraînement est un run MLflow, et les données sont versionnées par DVC.
+MaintAI doit lever une alerte avant qu'une machine tombe en panne. Une panne manquée (faux négatif) coûte plus cher qu'une fausse alerte (faux positif) : la première arrête la production et impose une réparation, la seconde coûte une inspection inutile. Depuis le TP5, chaque entraînement est un run MLflow, et les données sont versionnées par DVC : le choix peut être justifié par des runs identifiés, entraînés sur une version connue des données.
 
-Les six runs comparés ont été entraînés sur la **même version des données** : la v1 suivie par DVC (`data_md5 = 73e0b7cb3c6f795c70c3ddf970b99c15`, 5 000 relevés). Ils sont évalués sur le même jeu de test : 1 000 relevés, dont 136 pannes.
+Une première comparaison (sprint 1, données v1) avait retenu la régression logistique au seuil 0.2. Une grid search de **30 runs** a ensuite été menée sur les données **v2** (commit `ce83c1c`, `data_md5 = 93fdeef2cac1893c4f720c16457eea75`, 8 000 relevés). Tous ses modèles sont évalués sur le même jeu de test : 1 600 relevés, dont 205 pannes.
+
+**Critère de choix :** le plus grand recall parmi les modèles dont la precision est ≥ 0.5, c'est-à-dire qu'au moins une alerte sur deux est une vraie panne.
 
 ## Options étudiées
 
-| Run MLflow | Modèle | C | Seuil | recall | precision | accuracy | Pannes manquées | Fausses alertes |
+1. **Régression logistique (C = 1.0)** : simple, rapide et lisible. Son seul réglage utile est `C` ; elle n'a pas de learning rate. Sur la v2 : seuil 0.15, recall 0.859 et precision 0.506 (176 pannes détectées, 172 fausses alertes) ; seuil 0.2, recall 0.824 et precision 0.567 (169 détectées, 129 fausses alertes).
+2. **Forêt aléatoire** : écartée dès le sprint 1. Au même seuil, elle était moins bonne que la régression logistique en recall comme en precision.
+3. **Réseau de neurones (learning rate + dropout)** : non retenu. MaintAI n'utilise pas de réseau de neurones, et le dropout n'existe que dans ce type de modèle. Il aurait fallu installer PyTorch et réécrire l'entraînement.
+4. **Gradient boosting (100 arbres) : grid search sur learning rate × seuil**, soit 3 learning rates (0.05, 0.1, 0.2) × 10 seuils (0.1 à 0.35) = 30 runs, marqués `grid = tp5` dans MLflow. Les 6 meilleurs :
+
+| Rang | Run | learning_rate | Seuil | recall | precision | accuracy | Pannes manquées | Fausses alertes |
 |---|---|---|---|---|---|---|---|---|
-| `f0a233bc` | régression logistique | 1.0 | 0.3 | 0.750 | 0.622 | 0.904 | 34 | 62 |
-| `9a23ae38` | régression logistique | 0.01 | 0.3 | 0.691 | 0.653 | 0.908 | 42 | 50 |
-| **`09570622`** | **régression logistique** | **1.0** | **0.2** | **0.838** | **0.543** | **0.882** | **22** | **96** |
-| `1775edba` | régression logistique | 1.0 | 0.15 | 0.875 | 0.500 | 0.864 | 17 | 119 |
-| `7eb12597` | forêt aléatoire (200 arbres) | – | 0.3 | 0.728 | 0.562 | 0.886 | 37 | 77 |
-| `073572e3` | forêt aléatoire (200 arbres) | – | 0.2 | 0.831 | 0.479 | 0.854 | 23 | 123 |
+| **1** | **`341e1560`** | **0.05** | **0.15** | **0.868** | **0.500** | **0.872** | **27** | **178** |
+| 2 | `d25018b1` | 0.1 | 0.15 | 0.854 | 0.515 | 0.878 | 30 | 165 |
+| 3 | `8dcdb6dd` | 0.2 | 0.15 | 0.844 | 0.524 | 0.882 | 32 | 157 |
+| 4 | `4a429e18` | 0.05 | 0.175 | 0.839 | 0.526 | 0.882 | 33 | 155 |
+| 5 | `11dcf0f2` | 0.1 | 0.175 | 0.829 | 0.528 | 0.883 | 35 | 152 |
+| 6 | `9525a103` | 0.05 | 0.2 | 0.815 | 0.559 | 0.894 | 38 | 132 |
 
-La baseline (toujours « pas de panne ») a une accuracy de 0.864 et un recall de 0 : elle ne détecte aucune panne.
-
-1. **Régression logistique, seuil 0.3 (réglage du TP4)** : la meilleure accuracy, des alertes plutôt fiables (62 % sont de vraies pannes), mais une panne sur quatre est manquée (34 sur 136).
-2. **Régression logistique, C = 0.01** : plus de régularisation. Un peu moins de fausses alertes, mais 42 pannes manquées : c'est le plus mauvais recall, donc le pire choix pour MaintAI.
-3. **Régression logistique, seuil 0.2** : 12 pannes de plus détectées que l'option 1 (22 manquées au lieu de 34), en échange de 34 fausses alertes de plus (96 au lieu de 62).
-4. **Régression logistique, seuil 0.15** : encore 5 pannes de plus détectées (17 manquées), mais 23 fausses alertes de plus (119). La precision tombe à 0.50 (une alerte sur deux est fausse) et l'accuracy (0.864) n'est plus meilleure que celle de la baseline.
-5. **Forêt aléatoire** : moins bonne que la régression logistique au même seuil, sur les deux tableaux à la fois. Au seuil 0.2, elle manque 23 pannes (contre 22) et donne 123 fausses alertes (contre 96). Elle est aussi plus lourde (200 arbres) et moins lisible.
+Les seuils 0.1 et 0.125 donnent un recall plus élevé (jusqu'à 0.932), mais leur precision passe sous 0.5 : ils sont éliminés par le critère.
 
 ## Décision
 
-**Régression logistique (C = 1.0) avec un seuil d'alerte de 0.2.**
+**Gradient boosting (`GradientBoostingClassifier`, 100 arbres), learning_rate = 0.05, seuil d'alerte 0.15.**
 
-- Run MLflow : `095706227bc048438f7e4d27eae5498a` (expérience `maintai`, nom `amusing-panda-382`)
-- Données : v1 sous DVC, `data_md5 = 73e0b7cb3c6f795c70c3ddf970b99c15` (5 000 relevés, `n_train = 4000`)
+- Run MLflow : `341e156009fc48629f5ae70a29c7a912` (expérience `maintai`, tag `grid = tp5`)
+- Données : v2 sous DVC, `data_md5 = 93fdeef2cac1893c4f720c16457eea75` (commit `ce83c1c`, `n_train = 6400`)
+- Métriques : recall 0.868 (178 pannes sur 205), precision 0.500, accuracy 0.872
 - Versions : scikit-learn 1.8.0, enregistrée avec le modèle dans son `requirements.txt` MLflow
 
-La contrainte qui justifie le choix est le coût d'une panne manquée. Passer de 0.3 à 0.2 coûte environ 2,8 fausses alertes par panne détectée en plus (34 / 12) : c'est rentable dès qu'une panne coûte plus que trois inspections, ce qui est le cas pour un arrêt de machine. Descendre à 0.15 coûterait 4,6 fausses alertes par panne détectée en plus (23 / 5), et une alerte sur deux serait fausse. Les opérateurs risqueraient alors de ne plus croire les alertes. Le seuil 0.2 est le compromis retenu. La forêt aléatoire est écartée : elle n'est meilleure sur aucune métrique.
+**Pourquoi ce modèle :**
+- C'est le meilleur recall de toute la grille parmi les modèles qui respectent la precision ≥ 0.5 : il ne manque que 27 pannes sur 205.
+- Le learning rate le plus petit (0.05) gagne à chaque seuil bas. Avec 100 arbres, il corrige les erreurs plus progressivement et généralise mieux.
+- Il fait mieux que la meilleure régression logistique sur les mêmes données et le même jeu de test : 2 pannes détectées de plus qu'elle au seuil 0.15, et 9 de plus qu'au seuil 0.2, l'ancien choix.
+- Le seuil reste le réglage qui compte le plus. À learning rate fixe, passer de 0.35 à 0.15 fait gagner environ 20 points de recall, alors que les learning rates ne diffèrent que de 1 à 3 points à seuil égal.
 
 ## Conséquences
 
-- **Ce que nous acceptons :** davantage de fausses alertes. Sur 1 000 relevés, 96 inspections inutiles au lieu de 62, et 46 % des alertes sont fausses (precision 0.543). En échange, 84 % des pannes sont détectées au lieu de 75 %.
-- **Mise en service :** `predict.py` lit le seuil dans `models/model_info.json`. Le modèle déployé doit donc être entraîné avec `python -m maintai.train --threshold 0.2` (ou `MAINTAI_THRESHOLD=0.2`), sinon l'API garde le seuil par défaut de 0.3. Le modèle exact peut aussi être rechargé depuis MLflow : `mlflow.sklearn.load_model("runs:/095706227bc048438f7e4d27eae5498a/model")`.
-- **Reproductibilité :** les données du run se retrouvent par leur empreinte. On repère le commit « Données v1 » dont le reçu `data/sensors.csv.dvc` contient `md5: 73e0b7cb…`, puis `git checkout <commit> -- data/sensors.csv.dvc` et `dvc checkout` (ou `dvc pull`).
-- **À surveiller :** le seuil a été choisi sur le jeu de test lui-même, donc les chiffres sont un peu optimistes. Il faudrait le régler sur un jeu de validation, puis le confirmer sur des données nouvelles. Une v2 des données existe (`93fdeef2…`, 8 000 relevés) : avant de changer de modèle, il faut refaire cette comparaison sur un même jeu de test. En production, il faut suivre le recall réel (les pannes que le modèle n'a pas signalées) et la dérive des données, puis ré-entraîner sur une version DVC identifiée.
-- **À revoir si** le coût réel d'une panne et d'une inspection est connu : si une panne coûte plus d'environ cinq inspections, le seuil 0.15 devient préférable.
+- **Ce que nous acceptons :** beaucoup de fausses alertes. 178 inspections inutiles pour 1 600 relevés : une alerte sur deux est fausse. C'est le prix pour ne manquer que 13 % des pannes.
+- **Un gain petit et fragile :** l'avantage sur la régression logistique est de 2 pannes sur 205. La precision du run retenu est pile à la limite (178 / 356 = 0.500) : sur de nouvelles données, elle peut passer en dessous. **Solution de repli :** le run n° 2 (`d25018b1`, learning_rate 0.1, seuil 0.15 : recall 0.854, precision 0.515), qui garde plus de marge.
+- **Le modèle est moins lisible :** 100 arbres au lieu de 4 coefficients. On ne peut plus expliquer simplement le poids de chaque capteur.
+- **Mise en service :** `predict.py` lit le seuil dans `models/model_info.json`. Il faut donc entraîner le modèle déployé avec `python -m maintai.train --model gboost --lr 0.05 --threshold 0.15`, ou recharger le modèle exact depuis MLflow : `mlflow.sklearn.load_model("runs:/341e156009fc48629f5ae70a29c7a912/model")`.
+- **Reproductibilité :** on retrouve les données du run par son `data_md5` : `git checkout ce83c1c -- data/sensors.csv.dvc` puis `dvc checkout` (ou `dvc pull`).
+- **À surveiller :** le seuil a été choisi sur le jeu de test lui-même, donc les chiffres sont optimistes. Il faudrait le régler sur un jeu de validation, puis le confirmer sur des données nouvelles. En production, il faut suivre le recall réel (les pannes non signalées), la part de fausses alertes et la dérive des données. Il faudra ré-entraîner sur une version DVC identifiée si l'une d'elles se dégrade.
